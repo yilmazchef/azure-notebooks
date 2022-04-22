@@ -14,7 +14,7 @@ c.abc = collections.abc
 
 
 def to_pptx(md_file: str) -> str:
-
+    
     pptx_path = md_file.replace(".md", ".pptx")
     # pptx_template = os.getcwd() + os.path.sep + "Service" + os.path.sep + "template.pptx"
     cmdlet = f"pandoc \"{md_file}\" -s --wrap auto -o \"{pptx_path}\""

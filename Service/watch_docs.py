@@ -6,10 +6,13 @@ import time
 import pip
 import watchdog.events
 import watchdog.observers
-from docx_manager import to_docx
+from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
+    AdaptiveETA, FileTransferSpeed, FormatLabel, Percentage, \
+    ProgressBar, ReverseBar, RotatingMarker, \
+    SimpleProgress, Timer, UnknownLength
+from folder_manager import filter_files
+from docx_manager import to_docx, add_header, add_footer
 from pptx_manager import to_pptx
-from odt_manager import to_odt
-from markdown_manager import to_ipynb, to_md
 
 
 class Handler(watchdog.events.PatternMatchingEventHandler):
@@ -24,10 +27,49 @@ class Handler(watchdog.events.PatternMatchingEventHandler):
         # Event is created, you can process it now
 
     def on_modified(self, event):
-        to_docx(event.src_path)
+        sync(event.src_path)
 
     def on_deleted(self, event):
         os.remove(event.src_path.replace(".md", "docx"))
+
+
+def sync(source_file: str) -> tuple:
+
+    pBarMax = 2
+    widgets = [Percentage(),
+               ' ', Bar(),
+               ' ', ETA(),
+               ' ', AdaptiveETA()]
+    pBar = ProgressBar(widgets=widgets, maxval=pBarMax)
+
+    pBar.start()
+    pBarCount = 0
+
+    docx_file = to_docx(source_file)
+
+    header_image = os.getcwd() + os.path.sep + "Service" + \
+        os.path.sep + "header.png"
+    header_text = open(os.getcwd() + os.path.sep +
+                       "Service" + os.path.sep + "header.txt", "r")
+    add_header(docx_file, header_image, header_text)
+
+    footer_image = os.getcwd() + os.path.sep + "Service" + \
+        os.path.sep + "footer.png"
+    footer_text = open(os.getcwd() + os.path.sep +
+                       "Service" + os.path.sep + "footer.txt", "r")
+    add_footer(docx_file, footer_image, footer_text)
+
+    pBarCount += 1
+    pBar.update(pBarCount)
+
+    pptx_file = to_pptx(source_file)
+
+    pBarCount += 1
+    pBar.update(pBarCount)
+
+    pBar.finish()
+
+    return docx_file, pptx_file
 
 
 if __name__ == "__main__":
