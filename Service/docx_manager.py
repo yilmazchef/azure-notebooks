@@ -4,26 +4,12 @@ from docx.shared import Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 
-def to_docx(md_file):
+def to_docx(md_file:str) -> str:
 
     docx_file = md_file.replace(".md", ".docx")
     cmdlet = f"pandoc \"{md_file}\" -f markdown -o \"{docx_file}\""
     os.system(cmdlet)
-
-    text = """
-    Rouppeplein 16
-    1000 Brussel
-    Tel. 02 411 29 07
-    ondernemingsnr. 0475319893
-    RPR BRUSSEL-NEDERLANDSTALIG
-    wouter.vandenberge@intecbrussel.be                                
-    """
-    image = os.path.join(os.getcwd(), "IntecHeader.png")
-    # add_header(docx_file, image, text)
-
-    image = os.path.join(os.getcwd(), "IntecFooter.png")
-
-    # add_footer(docx_file, image)
+    return docx_file
 
 
 def add_header(docx_file, headerImage, headerText=None):
@@ -79,25 +65,3 @@ def add_footer(docx_file, footerImage, footerText=None):
         document.save(docx_file)
 
 
-if __name__ == "__main__":
-
-    docx_file = "intec_template.docx"
-
-    text = """
-    Rouppeplein 16
-    1000 Brussel
-    Tel. 02 411 29 07
-    ondernemingsnr. 0475319893
-    RPR BRUSSEL-NEDERLANDSTALIG
-    wouter.vandenberge@intecbrussel.be                                
-    """
-
-    image = os.getcwd() + os.path.sep + "IntecHeader.png"
-
-    add_header(docx_file, image, text)
-
-    text = "Some footer text.."
-
-    image = os.getcwd() + os.path.sep + "IntecFooter.png"
-
-    add_footer(docx_file, image)
